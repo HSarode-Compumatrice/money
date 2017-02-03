@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="money" default="build">
 <property name="basedir" value="."/>
-<property name="phpunit" value="/usr/local/bin/phpunit"/>
+<property name="phpunit" value="${basedir}/usr/local/bin/phpunit"/>
 <target name="build"
-         depends="prepare,phpunit,-check-failure"
+         depends="prepare,phpunit,phpunit-ci,-check-failure"
          description="Performs a tests and report genaration"/>
 
 
     <target name="clean" unless="clean.done" description="Cleanup build artifacts">
-        <delete dir="${basedir}/build/*.*"/>
+        <delete dir="${basedir}/build/logs"/>
         <property name="clean.done" value="true"/>
     </target>
 
     <target name="prepare" unless="prepare.done" depends="clean,generate-code" description="Prepare for build">
        
-       <mkdir dir="${basedir}/build/results/tests"/>
+       <mkdir dir="${basedir}/build/logs"/>
      
         <property name="prepare.done" value="true"/>
     </target>
@@ -28,15 +28,29 @@
         </exec>
     </target>
 
+  
+	 <target name="phpunit-ci"
+         unless="phpunit.done"
+         depends="prepare"
+         description="Run unit tests with PHPUnit">
+	<exec executable="${phpunit}" returnProperty="result.phpunit" taskname="phpunit">
+		<arg value="--configuration"/>
+		<arg path="${basedir}/phpunit.xml.dist"/>
+	</exec>
+
+     <property name="phpunit.done" value="true"/>
+   </target>
+	
+	
     <target name="phpunit" depends="prepare" description="Run unit tests with PHPUnit">
         <exec executable="${phpunit}" resultproperty="result.phpunit" taskname="phpunit">
                           
 		   <arg value="--configuration"/>
-            <arg path="${basedir}/build/results/test/phpunit.xml"/>
+            <arg path="${basedir}/phpunit.xml.dist"/>
         </exec>
     </target>
-   
-    <target name="-check-failure">
+	
+	<target name="-check-failure">
         <fail message="PHPUnit did not finish successfully">
             <condition>
                 <not>
