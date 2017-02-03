@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="money" default="build">
 <property name="basedir" value="."/>
-<property name="phpunit" value="${basedir}/usr/local/bin/phpunit"/>
+<property name="phpunit" value="${basedir}/phpunit"/>
 <target name="build"
          depends="prepare,phpunit,phpunit-ci,-check-failure"
          description="Performs a tests and report genaration"/>
